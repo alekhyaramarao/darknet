@@ -1633,10 +1633,10 @@ char *detection_to_json_1(detection *dets, int nboxes, int classes, char **names
                 float ymin = dets[i].bbox.y - dets[i].bbox.h / 2. + 1;
                 float ymax = dets[i].bbox.y + dets[i].bbox.h / 2. + 1;
 
-                float left_x = round((dets[i].det.bbox.x - dets[i].det.bbox.w / 2)*im.w);
-                float top_y = round((dets[i].det.bbox.y - dets[i].det.bbox.h / 2)*im.h);
-                float width = round(dets[i].det.bbox.w*im.w);
-                float height = round(dets[i].det.bbox.h*im.h);
+                float left_x = round((dets[i].bbox.x - dets[i].bbox.w / 2)*im.w);
+                float top_y = round((dets[i].bbox.y - dets[i].bbox.h / 2)*im.h);
+                float width = round(dets[i].bbox.w*im.w);
+                float height = round(dets[i].bbox.h*im.h);
 
 
                 if (xmin < 1) xmin = 1;
