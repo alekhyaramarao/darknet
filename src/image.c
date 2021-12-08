@@ -333,7 +333,7 @@ void draw_detections_v3(image im, detection *dets, int num, float thresh, char *
 
     char *send_buf = (char *)calloc(10024, sizeof(char));
     if (!send_buf) return 0;
-    sprintf(send_buf, " [ \n", frame_id);
+    sprintf(send_buf, " [ \n");
 
     int selected_detections_num;
     detection_with_class* selected_detections = get_actual_detections(dets, num, thresh, &selected_detections_num, names);
@@ -348,10 +348,10 @@ void draw_detections_v3(image im, detection *dets, int num, float thresh, char *
 
         if (ext_output){
             
-            left_x = round((selected_detections[i].det.bbox.x - selected_detections[i].det.bbox.w / 2)*im.w);
-            top_y = round((selected_detections[i].det.bbox.y - selected_detections[i].det.bbox.h / 2)*im.h);
-            width = round(selected_detections[i].det.bbox.w*im.w);
-            height = round(selected_detections[i].det.bbox.h*im.h);
+            float left_x = round((selected_detections[i].det.bbox.x - selected_detections[i].det.bbox.w / 2)*im.w);
+            float top_y = round((selected_detections[i].det.bbox.y - selected_detections[i].det.bbox.h / 2)*im.h);
+            float width = round(selected_detections[i].det.bbox.w*im.w);
+            float height = round(selected_detections[i].det.bbox.h*im.h);
 
             printf("\t(left_x: %4.0f   top_y: %4.0f   width: %4.0f   height: %4.0f)\n",
                 round((selected_detections[i].det.bbox.x - selected_detections[i].det.bbox.w / 2)*im.w),
@@ -370,10 +370,10 @@ void draw_detections_v3(image im, detection *dets, int num, float thresh, char *
 
                 if (ext_output){
                                     
-                    left_x = round((selected_detections[i].det.bbox.x - selected_detections[i].det.bbox.w / 2)*im.w);
-                    top_y = round((selected_detections[i].det.bbox.y - selected_detections[i].det.bbox.h / 2)*im.h);
-                    width = round(selected_detections[i].det.bbox.w*im.w);
-                    height = round(selected_detections[i].det.bbox.h*im.h);
+                    float left_x = round((selected_detections[i].det.bbox.x - selected_detections[i].det.bbox.w / 2)*im.w);
+                    float top_y = round((selected_detections[i].det.bbox.y - selected_detections[i].det.bbox.h / 2)*im.h);
+                    float width = round(selected_detections[i].det.bbox.w*im.w);
+                    float height = round(selected_detections[i].det.bbox.h*im.h);
 
                     printf("\t(left_x: %4.0f   top_y: %4.0f   width: %4.0f   height: %4.0f)\n",
                         round((selected_detections[i].det.bbox.x - selected_detections[i].det.bbox.w / 2)*im.w),
