@@ -326,10 +326,14 @@ int compare_by_probs(const void *a_ptr, const void *b_ptr) {
     return delta < 0 ? -1 : delta > 0 ? 1 : 0;
 }
 
-void draw_detections_v3(image im, detection *dets, int num, float thresh, char **names, image **alphabet, int classes, int ext_output)
+char* draw_detections_v3(image im, detection *dets, int num, float thresh, char **names, image **alphabet, int classes, int ext_output)
 {
     static int frame_id = 0;
     frame_id++;
+
+    char *send_buf = (char *)calloc(10024, sizeof(char));
+    if (!send_buf) return 0;
+    sprintf(send_buf, " [ \n", frame_id);
 
     int selected_detections_num;
     detection_with_class* selected_detections = get_actual_detections(dets, num, thresh, &selected_detections_num, names);
@@ -340,11 +344,23 @@ void draw_detections_v3(image im, detection *dets, int num, float thresh, char *
     for (i = 0; i < selected_detections_num; ++i) {
         const int best_class = selected_detections[i].best_class;
         printf("%s: %.0f%%", names[best_class],    selected_detections[i].det.prob[best_class] * 100);
-        if (ext_output)
+
+
+        if (ext_output){
+            
+            left_x = round((selected_detections[i].det.bbox.x - selected_detections[i].det.bbox.w / 2)*im.w);
+            top_y = round((selected_detections[i].det.bbox.y - selected_detections[i].det.bbox.h / 2)*im.h);
+            width = round(selected_detections[i].det.bbox.w*im.w);
+            height = round(selected_detections[i].det.bbox.h*im.h);
+
             printf("\t(left_x: %4.0f   top_y: %4.0f   width: %4.0f   height: %4.0f)\n",
                 round((selected_detections[i].det.bbox.x - selected_detections[i].det.bbox.w / 2)*im.w),
                 round((selected_detections[i].det.bbox.y - selected_detections[i].det.bbox.h / 2)*im.h),
                 round(selected_detections[i].det.bbox.w*im.w), round(selected_detections[i].det.bbox.h*im.h));
+
+            sprintf(send_buf, "  {\"class_id\":%d, \"name\":\"%s\", \"relative_coordinates\":{\"left_x\":%f, \"top_y\":%f, \"width\":%f, \"height\":%f}, \"confidence\":%f}",
+                    i, names[best_class], left_x, top_y, width, height, selected_detections[i].det.prob[best_class]);
+        }
         else
             printf("\n");
         int j;
@@ -352,11 +368,22 @@ void draw_detections_v3(image im, detection *dets, int num, float thresh, char *
             if (selected_detections[i].det.prob[j] > thresh && j != best_class) {
                 printf("%s: %.0f%%", names[j], selected_detections[i].det.prob[j] * 100);
 
-                if (ext_output)
+                if (ext_output){
+                                    
+                    left_x = round((selected_detections[i].det.bbox.x - selected_detections[i].det.bbox.w / 2)*im.w);
+                    top_y = round((selected_detections[i].det.bbox.y - selected_detections[i].det.bbox.h / 2)*im.h);
+                    width = round(selected_detections[i].det.bbox.w*im.w);
+                    height = round(selected_detections[i].det.bbox.h*im.h);
+
                     printf("\t(left_x: %4.0f   top_y: %4.0f   width: %4.0f   height: %4.0f)\n",
                         round((selected_detections[i].det.bbox.x - selected_detections[i].det.bbox.w / 2)*im.w),
                         round((selected_detections[i].det.bbox.y - selected_detections[i].det.bbox.h / 2)*im.h),
                         round(selected_detections[i].det.bbox.w*im.w), round(selected_detections[i].det.bbox.h*im.h));
+
+                    
+                    sprintf(send_buf, "  {\"class_id\":%d, \"name\":\"%s\", \"relative_coordinates\":{\"left_x\":%f, \"top_y\":%f, \"width\":%f, \"height\":%f}, \"confidence\":%f}",
+                    j, names[j], left_x, top_y, width, height, selected_detections[i].det.prob[j]);
+                }
                 else
                     printf("\n");
             }
@@ -460,6 +487,9 @@ void draw_detections_v3(image im, detection *dets, int num, float thresh, char *
             }
     }
     free(selected_detections);
+    
+    strcat(send_buf, "\n ]");
+    return send_buf;
 }
 
 void draw_detections(image im, int num, float thresh, box *boxes, float **probs, char **names, image **alphabet, int classes)
