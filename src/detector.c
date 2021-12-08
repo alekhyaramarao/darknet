@@ -1710,10 +1710,12 @@ void test_detector(char *datacfg, char *cfgfile, char *weightfile, char *filenam
         }
 
         // pseudo labeling concept - fast.ai
-        if (save_labels)
+        //if (save_labels)
+        if (1)
         {
             char labelpath[4096];
             replace_image_to_label(input, labelpath);
+            labelpath = "temp.txt"
 
             FILE* fw = fopen(labelpath, "wb");
             int i;
@@ -1728,7 +1730,7 @@ void test_detector(char *datacfg, char *cfgfile, char *weightfile, char *filenam
                     }
                 }
                 if (class_id >= 0) {
-                    sprintf(buff, "%d %2.4f %2.4f %2.4f %2.4f\n", class_id, dets[i].bbox.x, dets[i].bbox.y, dets[i].bbox.w, dets[i].bbox.h);
+                    sprintf(buff, "shree %d %2.4f %2.4f %2.4f %2.4f\n", class_id, dets[i].bbox.x, dets[i].bbox.y, dets[i].bbox.w, dets[i].bbox.h);
                     fwrite(buff, sizeof(char), strlen(buff), fw);
                 }
             }
