@@ -1698,6 +1698,7 @@ void test_detector(char *datacfg, char *cfgfile, char *weightfile, char *filenam
         }
 
         if (json_file) {
+        //if (1)) {
             if (json_buf) {
                 char *tmp = ", \n";
                 fwrite(tmp, sizeof(char), strlen(tmp), json_file);
@@ -1710,11 +1711,11 @@ void test_detector(char *datacfg, char *cfgfile, char *weightfile, char *filenam
         }
 
         // pseudo labeling concept - fast.ai
-        //if (save_labels)
-        if (1)
+        if (save_labels)
+        //if (1)
         {
             char labelpath[4096]="temp.txt";
-            //replace_image_to_label(input, labelpath);
+            replace_image_to_label(input, labelpath);
             //labelpath = "temp.txt"
 
             FILE* fw = fopen(labelpath, "wb");
