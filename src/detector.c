@@ -1713,9 +1713,9 @@ void test_detector(char *datacfg, char *cfgfile, char *weightfile, char *filenam
         //if (save_labels)
         if (1)
         {
-            char labelpath[4096];
-            replace_image_to_label(input, labelpath);
-            labelpath = "temp.txt"
+            char labelpath[4096]="temp.txt";
+            //replace_image_to_label(input, labelpath);
+            //labelpath = "temp.txt"
 
             FILE* fw = fopen(labelpath, "wb");
             int i;
