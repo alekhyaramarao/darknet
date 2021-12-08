@@ -1633,6 +1633,12 @@ char *detection_to_json_1(detection *dets, int nboxes, int classes, char **names
                 float ymin = dets[i].bbox.y - dets[i].bbox.h / 2. + 1;
                 float ymax = dets[i].bbox.y + dets[i].bbox.h / 2. + 1;
 
+                float left_x = round((dets[i].det.bbox.x - dets[i].det.bbox.w / 2)*im.w);
+                float top_y = round((dets[i].det.bbox.y - dets[i].det.bbox.h / 2)*im.h);
+                float width = round(dets[i].det.bbox.w*im.w);
+                float height = round(dets[i].det.bbox.h*im.h);
+
+
                 if (xmin < 1) xmin = 1;
                 if (ymin < 1) ymin = 1;
                 //if (xmax > w) xmax = w;
@@ -1641,8 +1647,10 @@ char *detection_to_json_1(detection *dets, int nboxes, int classes, char **names
 
                 //sprintf(buf, "  {\"class_id\":%d, \"name\":\"%s\", \"relative_coordinates\":{\"center_x\":%f, \"center_y\":%f, \"width\":%f, \"height\":%f}, \"confidence\":%f}",
                 //    j, names[j], dets[i].bbox.x, dets[i].bbox.y, dets[i].bbox.w, dets[i].bbox.h, dets[i].prob[j]);
+                //sprintf(buf, "  {\"class_id\":%d, \"name\":\"%s\", \"relative_coordinates\":{\"center_x\":%f, \"center_y\":%f, \"width\":%f, \"height\":%f}, \"confidence\":%f}",
+                    // j, names[j], xmin, ymin, xmax, ymax, dets[i].prob[j]);
                 sprintf(buf, "  {\"class_id\":%d, \"name\":\"%s\", \"relative_coordinates\":{\"center_x\":%f, \"center_y\":%f, \"width\":%f, \"height\":%f}, \"confidence\":%f}",
-                    j, names[j], xmin, ymin, xmax, ymax, dets[i].prob[j]);
+                    j, names[j], left_x, top_y, width, height, dets[i].prob[j]);
 
                 int send_buf_len = strlen(send_buf);
                 int buf_len = strlen(buf);
@@ -1749,7 +1757,8 @@ void test_detector(char *datacfg, char *cfgfile, char *weightfile, char *filenam
             else diounms_sort(dets, nboxes, l.classes, nms, l.nms_kind, l.beta_nms);
         }
 
-        char* send_buf_out = draw_detections_v4(im, dets, nboxes, thresh, names, alphabet, l.classes, ext_output);
+        draw_detections_v3(im, dets, nboxes, thresh, names, alphabet, l.classes, ext_output);
+        //char* send_buf_out = draw_detections_v4(im, dets, nboxes, thresh, names, alphabet, l.classes, ext_output);
         save_image(im, "predictions");
         if (!dont_show) {
             show_image(im, "predictions");
@@ -1762,12 +1771,12 @@ void test_detector(char *datacfg, char *cfgfile, char *weightfile, char *filenam
                 fwrite(tmp, sizeof(char), strlen(tmp), json_file);
             }
             ++json_image_id;
-            //json_buf = detection_to_json(dets, nboxes, l.classes, names, json_image_id, input);
+            json_buf = detection_to_json_1(dets, nboxes, l.classes, names, json_image_id, input, im);
 
-            //fwrite(json_buf, sizeof(char), strlen(json_buf), json_file);
-            fwrite(send_buf_out, sizeof(char), strlen(send_buf_out), json_file);
-            //free(json_buf);
-            free(send_buf_out);
+            fwrite(json_buf, sizeof(char), strlen(json_buf), json_file);
+            //fwrite(send_buf_out, sizeof(char), strlen(send_buf_out), json_file);
+            free(json_buf);
+            //free(send_buf_out);
         }
 
         // pseudo labeling concept - fast.ai
