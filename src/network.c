@@ -1023,9 +1023,21 @@ char *detection_to_json(detection *dets, int nboxes, int classes, char **names, 
                 if (!buf) return 0;
                 //sprintf(buf, "{\"image_id\":%d, \"category_id\":%d, \"bbox\":[%f, %f, %f, %f], \"score\":%f}",
                 //    image_id, j, dets[i].bbox.x, dets[i].bbox.y, dets[i].bbox.w, dets[i].bbox.h, dets[i].prob[j]);
+                float xmin = dets[i].bbox.x - dets[i].bbox.w / 2. + 1;
+                float xmax = dets[i].bbox.x + dets[i].bbox.w / 2. + 1;
+                float ymin = dets[i].bbox.y - dets[i].bbox.h / 2. + 1;
+                float ymax = dets[i].bbox.y + dets[i].bbox.h / 2. + 1;
 
+                if (xmin < 1) xmin = 1;
+                if (ymin < 1) ymin = 1;
+                //if (xmax > w) xmax = w;
+                //if (ymax > h) ymax = h;
+
+
+                //sprintf(buf, "  {\"class_id\":%d, \"name\":\"%s\", \"relative_coordinates\":{\"center_x\":%f, \"center_y\":%f, \"width\":%f, \"height\":%f}, \"confidence\":%f}",
+                //    j, names[j], dets[i].bbox.x, dets[i].bbox.y, dets[i].bbox.w, dets[i].bbox.h, dets[i].prob[j]);
                 sprintf(buf, "  {\"class_id\":%d, \"name\":\"%s\", \"relative_coordinates\":{\"center_x\":%f, \"center_y\":%f, \"width\":%f, \"height\":%f}, \"confidence\":%f}",
-                    j, names[j], dets[i].bbox.x, dets[i].bbox.y, dets[i].bbox.w, dets[i].bbox.h, dets[i].prob[j]);
+                    j, names[j], xmin, ymin, xmax, ymax, dets[i].prob[j]);
 
                 int send_buf_len = strlen(send_buf);
                 int buf_len = strlen(buf);
